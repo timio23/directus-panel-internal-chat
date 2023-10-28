@@ -46,9 +46,13 @@ Yes, you can search the chat! Simply type your search term into the search field
 - Last name of the user
 - Email address of the user
 
+![Search](./images/search.jpg)
+
 ### Emojis
 
 There is an emoji selection button for inserting your choice of emojis from the built-in Directus component. This will place the emoji at the location of the cursor.
+
+![Emojis](./images/emojis.jpg)
 
 ### Mentions
 
@@ -56,11 +60,15 @@ You can mention other users by typing @ or click the mention button at the botto
 
 Mentions will notify that user by email and include your message in the email. This is a great way to invite others to join the conversionation.
 
+![Mention Users with Email Notification](./images/mentions.jpg)
+
 ### Edit/Delete a comment
 
 Owners of a comment and Administrators can edit or delete comments using the ellipsis next to the time. When editing the comment, the contents of the comment are loaded into the input field at the bottom. Simply make the change and click **Save**.
 
 When deleting a comment, a confirmation dialog will appear for confirmation.
+
+![Edit and Delete Comments](./images/edit-delete.jpg)
 
 ## Permissions
 
@@ -78,11 +86,3 @@ You can use the custom permissions feature to filter out comments in the activit
 ![Communicate across dashboards](./images/persistant-chat.jpg)
 
 ![Create custom chat or use existing comments](./images/custom-or-existing.jpg)
-
-![Search](./images/search.jpg)
-
-![Mention Users with Email Notification](./images/mentions.jpg)
-
-![Edit and Delete Comments](./images/edit-delete.jpg)
-
-![Emojis](./images/emojis.jpg)

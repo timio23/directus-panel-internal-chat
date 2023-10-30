@@ -11,22 +11,29 @@ export default {
 			field: 'chat_collection',
 			type: 'string',
 			name: '$t:collection',
+			schema: {
+				default_value: 'directus_dashboards',
+			},
 			meta: {
 				interface: 'system-collection',
+				required: true,
 				options: {
 					includeSystem: true,
-					includeSingleton: false,
+					includeSingleton: true,
 				},
 				width: 'half',
-				default: 'directus_dashboards',
 			},
 		},
 		{
 			field: 'chat_id',
 			name: 'Chat ID',
 			type: 'string',
+			scheme: {
+				default_value: `chat_${Math.random().toString(20).substr(2, 6)}`,
+			},
 			meta: {
 				interface: 'input',
+				required: true,
 				width: 'half',
 			},
 		},

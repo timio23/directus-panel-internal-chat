@@ -15,14 +15,13 @@
 			/>
 		</div>
 		<div v-if="!collectionPermission" class="empty comments-container">
-			<div v-if="!loading" class="message">You are not authorized to access this collection</div>
+			<v-info v-if="!loading" icon="block" title="You are not authorized to access this collection" type="danger">Please conatct your administrator to gain access to {{ chat_collection }}.</v-info>
 		</div>
 		<div v-else-if="!activityPermission" class="empty comments-container">
-			<div v-if="!loading" class="message"></div>
-			<v-info v-if="!loading" icon="block" title="You are not authorized to access this chat" type="warning">Please conatct your administrator to gain access to Directus Activity.</v-info>
+			<v-info v-if="!loading" icon="block" title="You are not authorized to access this chat" type="danger">Please conatct your administrator to gain access to Directus Activity.</v-info>
 		</div>
 		<div v-else-if="!activity || activity.length === 0" class="empty comments-container">
-			<div v-if="!loading" class="message">{{ t('no_comments') }}</div>
+			<v-info v-if="!loading" icon="forum" :title="t('no_comments')" type="warning"></v-info>
 		</div>
 		<div class="comments-container" v-else>
 			<div class="comments-group" v-for="group in activity" :key="group.date.toString()">
@@ -175,26 +174,20 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-		dashboard: {
-			type: String,
-		},
-		chat_collection: {
-			type: String,
-			default: 'directus_dashboards',
-		},
-		chat_id: {
-			type: String,
-			default: '',
-		},
+		dashboard: String,
+		chat_collection: String,
+		chat_id: String,
 	},
 	setup(props){
 		const { t } = useI18n();
 		const regex = /\s@[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/gm;
+		const comment_collection = ref(props.chat_collection);
+		const chat_id = ref(props.chat_id);
 		const api = useApi();
 		const { usePermissionsStore, useUserStore, useNotificationsStore } = useStores();
 
 		const { hasPermission } = usePermissionsStore();
-		const collectionPermission = hasPermission(props.chat_collection, 'read');
+		const collectionPermission = hasPermission(comment_collection.value, 'read');
 		const activityPermission = hasPermission('directus_activity', 'read');
 		const canPost = hasPermission('directus_activity', 'create');
 
@@ -205,7 +198,6 @@ export default {
 
 		const showMentionDropDown = ref(false);
 
-		const comment_collection = props.chat_collection ? props.chat_collection : 'directus_dashboards';
 		const editCommentId = ref('');
 		const newCommentContent = ref('');
 		const selectedKeyboardIndex = ref(0);
@@ -222,7 +214,7 @@ export default {
 		let lastCaretOffset = 0;
 
 		const activitySearch = ref('');
-		const { activity, loading, refresh, count, userPreviews } = useActivity(comment_collection, props.chat_id);
+		const { activity, loading, refresh, count, userPreviews } = useActivity();
 
 		setInterval(refresh, 60000);
 
@@ -262,7 +254,7 @@ export default {
 			selectedKeyboardIndex.value = 0;
 		}
 
-		function useActivity(collection, primaryKey) {
+		function useActivity() {
 			const activity = ref(null);
 			const count = ref(0);
 			const error = ref(null);
@@ -293,8 +285,8 @@ export default {
 							'revisions.id',
 							'comment',
 						],
-						'filter[_and][0][collection][_eq]': collection,
-						'filter[_and][1][item][_eq]': primaryKey,
+						'filter[_and][0][collection][_eq]': comment_collection.value,
+						'filter[_and][1][item][_eq]': chat_id.value,
 						'filter[_and][2][action][_eq]': 'comment',
 					},
 				};
@@ -311,7 +303,6 @@ export default {
 					count.value = response.data.data.length;
 
 					await loadUserPreviews(response.data.data, regex).then((loadedUserPreviews) => {
-						//console.log(loadedUserPreviews);
 						userPreviews.value = loadedUserPreviews;
 
 						const activityWithUsersInComments = (response.data.data).map((comment) => {
@@ -320,13 +311,9 @@ export default {
 								(match) => {
 									let match_id = match.substring(2);
 									let match_name = loadedUserPreviews[match_id];
-									console.log(match_id);
-									console.log(loadedUserPreviews[match_id]);
 									return `<mark>${match_name}</mark>`
 								}
 							);
-
-							//const display = comment.comment;
 
 							return {
 								...comment,
@@ -444,8 +431,8 @@ export default {
 					});
 				} else {
 					await api.post(`/activity/comment`, {
-						collection: comment_collection,
-						item: props.chat_id,
+						collection: comment_collection.value,
+						item: chat_id.value,
 						comment: newCommentContent.value,
 					});
 				}
@@ -623,6 +610,7 @@ export default {
 			],
 			() => {
 				comment_collection.value = props.chat_collection;
+				chat_id.value = props.chat_id;
 				refresh();
 			},
 		);

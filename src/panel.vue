@@ -18,7 +18,8 @@
 			<div v-if="!loading" class="message">You are not authorized to access this collection</div>
 		</div>
 		<div v-else-if="!activityPermission" class="empty comments-container">
-			<div v-if="!loading" class="message">You are not authorized to access this chat</div>
+			<div v-if="!loading" class="message"></div>
+			<v-info v-if="!loading" icon="block" title="You are not authorized to access this chat" type="warning">Please conatct your administrator to gain access to Directus Activity.</v-info>
 		</div>
 		<div v-else-if="!activity || activity.length === 0" class="empty comments-container">
 			<div v-if="!loading" class="message">{{ t('no_comments') }}</div>
@@ -163,7 +164,7 @@
 
 <script>
 import { useApi, useStores } from '@directus/extensions-sdk';
-import { isThisYear, isToday, isYesterday, formatDistanceToNow } from 'date-fns';
+import { isThisYear, isToday, isYesterday, formatDistanceToNow, format } from 'date-fns';
 import { flatten, groupBy, orderBy, cloneDeep, throttle } from 'lodash';
 import { useI18n } from 'vue-i18n';
 import { ref, watch } from 'vue';
@@ -350,8 +351,8 @@ export default {
 
 							if (today) dateFormatted = t('today');
 							else if (yesterday) dateFormatted = t('yesterday');
-							else if (thisYear) dateFormatted = localizedFormat(date, String(t('date-fns_date_short_no_year')));
-							else dateFormatted = localizedFormat(date, String(t('date-fns_date_short')));
+							else if (thisYear) dateFormatted = format(date, String(t('date-fns_date_short_no_year')));
+							else dateFormatted = format(date, String(t('date-fns_date_short')));
 
 							activityGrouped.value.push({
 								date: date,
